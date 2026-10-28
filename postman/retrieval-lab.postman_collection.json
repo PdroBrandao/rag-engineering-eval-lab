@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Retrieval Lab",
+    "description": "Local API examples. The collection does not contain credentials. Set base_url to the local server.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/health"
+      }
+    },
+    {
+      "name": "Ingest PDF",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "",
+              "description": "Choose a PDF on your machine. The collection does not embed a document."
+            },
+            {
+              "key": "chunk_size",
+              "value": "500",
+              "type": "text"
+            },
+            {
+              "key": "chunk_overlap",
+              "value": "50",
+              "type": "text"
+            },
+            {
+              "key": "replace",
+              "value": "false",
+              "type": "text",
+              "description": "true is rejected. v1 does not delete stored chunks."
+            }
+          ]
+        },
+        "url": "{{base_url}}/ingest"
+      }
+    },
+    {
+      "name": "Query",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"What are the main risks of LLM-as-a-Judge?\",\n  \"top_k\": 5\n}"
+        },
+        "url": "{{base_url}}/query"
+      }
+    }
+  ]
+}

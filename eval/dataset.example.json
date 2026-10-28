@@ -1,0 +1,11 @@
+{
+  "k": 5,
+  "rrf_k": 60,
+  "notes": "Replace relevant_chunk_ids with ids returned by POST /ingest before treating the scores as an evaluation.",
+  "cases": [
+    {
+      "question": "What are the main risks of LLM-as-a-Judge?",
+      "relevant_chunk_ids": []
+    }
+  ]
+}
