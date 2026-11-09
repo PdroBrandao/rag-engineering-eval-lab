@@ -74,6 +74,7 @@ def query_retrieval(
     store: DocumentStore,
     embedder: Embedder,
     *,
+    filter_collections: list[str],
     top_k: int = 5,
     rrf_k: int = 60,
     candidate_k: int | None = None,
@@ -84,6 +85,25 @@ def query_retrieval(
     if rrf_k < 1:
         raise RetrievalError(422, "rrf_k must be a positive integer.")
     resolved_candidate_k = resolve_candidate_k(top_k, candidate_k)
+    if not filter_collections:
+        return {
+            "question": cleaned,
+            "top_k": top_k,
+            "rrf_k": rrf_k,
+            "candidate_k": resolved_candidate_k,
+            "filter_collections": [],
+            "vector": [],
+            "lexical": [],
+            "hybrid": [],
+            "latency_ms": {
+                "embed_ms": 0.0,
+                "vector_ms": 0.0,
+                "lexical_ms": 0.0,
+                "fusion_ms": 0.0,
+                "hybrid_ms": 0.0,
+            },
+            "documents": [],
+        }
 
     embed_started = time.perf_counter()
     try:
@@ -96,7 +116,9 @@ def query_retrieval(
 
     vector_started = time.perf_counter()
     try:
-        vector_rows = store.match_documents(query_embedding, resolved_candidate_k)
+        vector_rows = store.match_documents(
+            query_embedding, resolved_candidate_k, filter_collections
+        )
     except DatabaseError:
         raise
     except Exception as exc:
@@ -105,7 +127,9 @@ def query_retrieval(
 
     lexical_started = time.perf_counter()
     try:
-        lexical_rows = store.search_fts(cleaned, resolved_candidate_k)
+        lexical_rows = store.search_fts(
+            cleaned, resolved_candidate_k, filter_collections
+        )
     except DatabaseError:
         raise
     except Exception as exc:
@@ -147,6 +171,7 @@ def query_retrieval(
         "top_k": top_k,
         "rrf_k": rrf_k,
         "candidate_k": resolved_candidate_k,
+        "filter_collections": filter_collections,
         "vector": vector_hits,
         "lexical": lexical_hits,
         "hybrid": hybrid_hits,

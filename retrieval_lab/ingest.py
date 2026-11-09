@@ -17,6 +17,7 @@ def ingest_pdf(
     filename: str | None,
     store: DocumentStore,
     embedder: Embedder,
+    collection: str,
     *,
     chunk_size: int = 500,
     chunk_overlap: int = 50,
@@ -40,7 +41,7 @@ def ingest_pdf(
         raise IngestError(400, str(exc)) from exc
 
     document_hash = content_sha256(data)
-    existing = store.find_by_hash(document_hash)
+    existing = store.find_by_hash(document_hash, collection)
     if existing:
         stored_name = existing[0].get("document_name") or "the previous upload"
         raise IngestError(
@@ -62,6 +63,7 @@ def ingest_pdf(
     rows = [
         {
             "document_name": document_name,
+            "collection": collection,
             "page": chunk.page,
             "chunk_index": chunk.chunk_index,
             "content": chunk.content,
@@ -97,6 +99,7 @@ def ingest_pdf(
     return {
         "document_name": document_name,
         "content_sha256": document_hash,
+        "collection": collection,
         "page_count": len(pages),
         "chunk_count": len(chunks),
         "chunk_ids": chunk_ids,

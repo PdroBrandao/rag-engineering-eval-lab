@@ -13,15 +13,25 @@ logger = logging.getLogger(__name__)
 class DocumentStore(Protocol):
     def ping(self) -> None: ...
 
-    def find_by_hash(self, content_sha256: str) -> list[dict[str, Any]]: ...
+    def resolve_lab_access(self, issuer: str, subject: str) -> dict[str, Any]: ...
+
+    def find_by_hash(self, content_sha256: str, collection: str) -> list[dict[str, Any]]: ...
 
     def insert_chunks(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
 
     def match_documents(
-        self, query_embedding: list[float], match_count: int
+        self,
+        query_embedding: list[float],
+        match_count: int,
+        filter_collections: list[str],
     ) -> list[dict[str, Any]]: ...
 
-    def search_fts(self, query_text: str, match_count: int) -> list[dict[str, Any]]: ...
+    def search_fts(
+        self,
+        query_text: str,
+        match_count: int,
+        filter_collections: list[str],
+    ) -> list[dict[str, Any]]: ...
 
 
 def create_supabase(settings: Settings) -> Client:
@@ -38,11 +48,29 @@ class SupabaseDocumentStore:
             "ping",
         )
 
-    def find_by_hash(self, content_sha256: str) -> list[dict[str, Any]]:
+    def resolve_lab_access(self, issuer: str, subject: str) -> dict[str, Any]:
+        response = self._execute(
+            self._client.rpc(
+                "resolve_lab_access",
+                {"p_issuer": issuer, "p_subject": subject},
+            ),
+            "resolve_lab_access",
+        )
+        data = response.data
+        if isinstance(data, dict):
+            return data
+        return {
+            "permissions": [],
+            "read_collections": [],
+            "write_collections": [],
+        }
+
+    def find_by_hash(self, content_sha256: str, collection: str) -> list[dict[str, Any]]:
         response = self._execute(
             self._client.table("documents")
-            .select("id,document_name")
+            .select("id,document_name,collection")
             .eq("metadata->>content_sha256", content_sha256)
+            .eq("collection", collection)
             .limit(1),
             "find_by_hash",
         )
@@ -56,25 +84,42 @@ class SupabaseDocumentStore:
         return list(response.data or [])
 
     def match_documents(
-        self, query_embedding: list[float], match_count: int
+        self,
+        query_embedding: list[float],
+        match_count: int,
+        filter_collections: list[str],
     ) -> list[dict[str, Any]]:
+        if not filter_collections:
+            return []
         response = self._execute(
             self._client.rpc(
                 "match_documents",
                 {
                     "query_embedding": query_embedding,
                     "match_count": match_count,
+                    "filter_collections": filter_collections,
                 },
             ),
             "match_documents",
         )
         return list(response.data or [])
 
-    def search_fts(self, query_text: str, match_count: int) -> list[dict[str, Any]]:
+    def search_fts(
+        self,
+        query_text: str,
+        match_count: int,
+        filter_collections: list[str],
+    ) -> list[dict[str, Any]]:
+        if not filter_collections:
+            return []
         response = self._execute(
             self._client.rpc(
                 "search_documents_fts",
-                {"query_text": query_text, "match_count": match_count},
+                {
+                    "query_text": query_text,
+                    "match_count": match_count,
+                    "filter_collections": filter_collections,
+                },
             ),
             "search_fts",
         )

@@ -1,10 +1,14 @@
 import logging
 
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import Depends, FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from openai import OpenAI
 
 from retrieval_lab import __version__
+from retrieval_lab.auth.deps import get_access_context
+from retrieval_lab.auth.guards import require_write_collection, resolve_query_collections
+from retrieval_lab.auth.jwt_validator import JwtValidator
+from retrieval_lab.auth.models import AccessContext
 from retrieval_lab.config import MAX_UPLOAD_BYTES, load_settings
 from retrieval_lab.db import SupabaseDocumentStore, create_supabase
 from retrieval_lab.embeddings import OpenAIEmbedder
@@ -22,20 +26,25 @@ def create_app() -> FastAPI:
         version=__version__,
         description=(
             "Ingest PDFs and compare vector, lexical, and hybrid retrieval. "
-            "The API does not generate answers. Vector similarity, lexical rank, "
-            "and RRF scores use different scales and are not directly comparable. "
-            "The server is intended to run on 127.0.0.1."
+            "POST /ingest and POST /query require a valid JWT Bearer token. "
+            "The API does not generate answers. The server is intended to run on 127.0.0.1."
         ),
     )
     app.state.store = None
     app.state.embedder = None
     app.state.settings = None
+    app.state.jwt_validator = None
     app.state.max_upload_bytes = MAX_UPLOAD_BYTES
 
     def settings():
         if app.state.settings is None:
             app.state.settings = load_settings()
         return app.state.settings
+
+    def jwt_validator():
+        if app.state.jwt_validator is None:
+            app.state.jwt_validator = JwtValidator(settings().jwt)
+        return app.state.jwt_validator
 
     def store():
         if app.state.store is None:
@@ -58,7 +67,10 @@ def create_app() -> FastAPI:
     @app.get("/health", response_model=HealthResponse)
     def health():
         try:
-            store().ping()
+            if app.state.store is not None:
+                app.state.store.ping()
+            else:
+                store().ping()
         except Exception:
             logger.error("health check failed")
             return JSONResponse(
@@ -70,10 +82,13 @@ def create_app() -> FastAPI:
     @app.post("/ingest", response_model=IngestResponse)
     async def ingest(
         file: UploadFile = File(...),
+        collection: str = Form(...),
         chunk_size: int = Form(500),
         chunk_overlap: int = Form(50),
         replace: bool = Form(False),
+        access: AccessContext = Depends(get_access_context),
     ):
+        normalized_collection = require_write_collection(access, collection)
         data = await file.read()
         current = app.state.settings
         model = current.embedding_model if current is not None else "text-embedding-3-small"
@@ -82,6 +97,7 @@ def create_app() -> FastAPI:
             file.filename,
             store(),
             embedder(),
+            normalized_collection,
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             replace=replace,
@@ -91,17 +107,23 @@ def create_app() -> FastAPI:
         return IngestResponse(**result)
 
     @app.post("/query", response_model=QueryResponse)
-    def query(request: QueryRequest):
+    def query(
+        request: QueryRequest,
+        access: AccessContext = Depends(get_access_context),
+    ):
+        filter_collections = resolve_query_collections(access, request.collections)
         result = query_retrieval(
             request.question,
             store(),
             embedder(),
+            filter_collections=filter_collections,
             top_k=request.top_k,
             rrf_k=request.rrf_k,
             candidate_k=request.candidate_k,
         )
         return QueryResponse(**result)
 
+    app.state._jwt_validator_factory = jwt_validator
     return app
 
 

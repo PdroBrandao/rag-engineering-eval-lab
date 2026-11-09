@@ -4,7 +4,7 @@ This document describes the code in this repository.
 
 ## Process
 
-The API is the FastAPI app in [retrieval_lab/main.py](retrieval_lab/main.py). `uvicorn retrieval_lab.main:app --host 127.0.0.1 --port 8000` and `python -m retrieval_lab.main` listen on localhost. The service has no frontend, API authentication, agent, or answer generation.
+The API is the FastAPI app in [retrieval_lab/main.py](retrieval_lab/main.py). `uvicorn retrieval_lab.main:app --host 127.0.0.1 --port 8000` and `python -m retrieval_lab.main` listen on localhost. JWT Bearer auth protects `/ingest` and `/query`; see [SECURITY_ARCHITECTURE.md](SECURITY_ARCHITECTURE.md). The service has no frontend user directory, agent, or answer generation.
 
 [retrieval_lab/config.py](retrieval_lab/config.py) reads credentials from `.env` when the first live request needs Supabase or OpenAI. Tests inject fakes and do not load those variables.
 
@@ -22,7 +22,7 @@ The existing table is `public.documents`. The PostgREST OpenAPI spec showed thes
 - `created_at` timestamptz, default `now()`
 - `fts` tsvector
 
-The insert in [retrieval_lab/db.py](retrieval_lab/db.py) sends the name, page, index, content, metadata, and embedding. The database fills `id`, `created_at`, and `fts`. RLS stays enabled. The API uses the server secret key, which bypasses RLS in Supabase. The search functions are `security invoker`, and `EXECUTE` is granted only to `service_role`.
+The insert in [retrieval_lab/db.py](retrieval_lab/db.py) sends the name, collection, page, index, content, metadata, and embedding. The database fills `id`, `created_at`, and `fts`. RLS stays enabled on `documents`. The API uses the server secret key, which bypasses RLS in Supabase. Collection-scoped search functions and `resolve_lab_access` are `security invoker`, with `EXECUTE` granted only to `service_role`. Authorization tables from [sql/002_auth_rbac.sql](sql/002_auth_rbac.sql) are not granted to `anon` or `authenticated`.
 
 The unique index, the optional `fts` trigger, and the functions `match_documents` and `search_documents_fts` are in [sql/001_retrieval.sql](sql/001_retrieval.sql). That migration has been applied. `fts` is a stored generated column, so the script did not add a trigger. An HNSW index using `vector_cosine_ops` was already present, and the migration checks that operator class before creating another index, so the existing cosine index was left in place. The GIN index on `fts` was also already present. The new object is the partial unique index on `(metadata->>'content_sha256', chunk_index)`. Until those functions exist, ingestion can insert rows, but `POST /query` cannot run `<=>` or `ts_rank` through PostgREST.
 

@@ -1,19 +1,36 @@
 {
   "info": {
     "name": "Retrieval Lab",
-    "description": "Local API examples. The collection does not contain credentials. Set base_url to the local server.",
+    "description": "Local API examples. Set base_url and access_token. Do not store production secrets in the collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
   },
   "variable": [
     {
       "key": "base_url",
       "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
     }
   ],
   "item": [
     {
       "name": "Health",
       "request": {
+        "auth": {
+          "type": "noauth"
+        },
         "method": "GET",
         "header": [],
         "url": "{{base_url}}/health"
@@ -31,7 +48,12 @@
               "key": "file",
               "type": "file",
               "src": "",
-              "description": "Choose a PDF on your machine. The collection does not embed a document."
+              "description": "Choose a PDF on your machine."
+            },
+            {
+              "key": "collection",
+              "value": "legacy",
+              "type": "text"
             },
             {
               "key": "chunk_size",
@@ -46,8 +68,7 @@
             {
               "key": "replace",
               "value": "false",
-              "type": "text",
-              "description": "true is rejected. v1 does not delete stored chunks."
+              "type": "text"
             }
           ]
         },
@@ -66,7 +87,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"question\": \"What are the main risks of LLM-as-a-Judge?\",\n  \"top_k\": 5\n}"
+          "raw": "{\n  \"question\": \"What are the main risks of LLM-as-a-Judge?\",\n  \"top_k\": 5,\n  \"collections\": [\"legacy\"]\n}"
         },
         "url": "{{base_url}}/query"
       }

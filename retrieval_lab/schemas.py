@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 
 class IngestResponse(BaseModel):
     document_name: str
+    collection: str
     content_sha256: str
     page_count: int
     chunk_count: int
@@ -61,6 +62,7 @@ class QueryRequest(BaseModel):
     top_k: int = Field(default=5, ge=1, le=100)
     rrf_k: int = Field(default=60, ge=1, le=10000)
     candidate_k: int | None = Field(default=None, ge=1, le=200)
+    collections: list[str] | None = None
 
 
 class QueryResponse(BaseModel):
@@ -68,6 +70,7 @@ class QueryResponse(BaseModel):
     top_k: int
     rrf_k: int
     candidate_k: int
+    filter_collections: list[str]
     vector: list[VectorHit]
     lexical: list[LexicalHit]
     hybrid: list[HybridHit]
