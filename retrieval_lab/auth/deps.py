@@ -29,8 +29,15 @@ def get_jwt_validator(request: Request) -> JwtValidatorProtocol:
 
 def get_document_store(request: Request) -> DocumentStore:
     store = getattr(request.app.state, "store", None)
+
     if store is None:
-        raise RuntimeError("Document store is not configured.")
+        factory = getattr(request.app.state, "_store_factory", None)
+        if factory is None:
+            raise RuntimeError("Document store is not configured.")
+
+        store = factory()
+        request.app.state.store = store
+
     return store
 
 

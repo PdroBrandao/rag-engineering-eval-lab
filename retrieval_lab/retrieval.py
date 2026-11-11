@@ -137,19 +137,19 @@ def query_retrieval(
     lexical_ms = _elapsed_ms(lexical_started)
 
     try:
-        vector_hits = [_vector_hit(row) for row in vector_rows]
+        vector_hits = [_vector_hit(row) for row in vector_rows] # [{"id": 54, "similarity": 0.515, "rank": 1},{...}]
         lexical_hits = [_lexical_hit(row) for row in lexical_rows]
     except (KeyError, TypeError, ValueError) as exc:
         raise DatabaseError("Retrieval response was missing required fields.") from exc
 
     fusion_started = time.perf_counter()
     by_id = {hit["id"]: hit for hit in lexical_hits}
-    by_id.update({hit["id"]: hit for hit in vector_hits})
-    vector_ranks = {hit["id"]: hit["rank"] for hit in vector_hits}
+    by_id.update({hit["id"]: hit for hit in vector_hits}) # [54: {"id": 54, "similarity": 0.515, "rank": 1}, 56: {...}, 55: {...},]
+    vector_ranks = {hit["id"]: hit["rank"] for hit in vector_hits} # { 54: 1, 56: 2, 55: 3 }
     lexical_ranks = {hit["id"]: hit["rank"] for hit in lexical_hits}
-    fused = fuse_rankings([vector_ranks, lexical_ranks], rrf_k=rrf_k)[:top_k]
+    fused = fuse_rankings([vector_ranks, lexical_ranks], rrf_k=rrf_k)[:top_k] # [(56, 0.03252),(55, 0.03200), (54, 0.01639)]
     hybrid_hits = []
-    for rank, (chunk_id, rrf_score) in enumerate(fused, start=1):
+    for rank, (chunk_id, rrf_score) in enumerate(fused, start=1): # (1, (56, 0.03252)) ... (2, (55, 0.03200))
         source = by_id[chunk_id]
         hybrid_hits.append(
             {

@@ -4,6 +4,12 @@ from fastapi import Depends, FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from openai import OpenAI
 
+import os
+from pathlib import Path
+from retrieval_lab.auth.jwt_validator import LocalJwtValidator
+from dotenv import load_dotenv
+load_dotenv()
+
 from retrieval_lab import __version__
 from retrieval_lab.auth.deps import get_access_context
 from retrieval_lab.auth.guards import require_write_collection, resolve_query_collections
@@ -43,7 +49,16 @@ def create_app() -> FastAPI:
 
     def jwt_validator():
         if app.state.jwt_validator is None:
-            app.state.jwt_validator = JwtValidator(settings().jwt)
+            public_key_file = os.environ.get("LOCAL_JWT_PUBLIC_KEY_FILE")
+
+            if public_key_file:
+                app.state.jwt_validator = LocalJwtValidator(
+                    settings().jwt,
+                    Path(public_key_file).read_text(),
+                )
+            else:
+                app.state.jwt_validator = JwtValidator(settings().jwt)
+
         return app.state.jwt_validator
 
     def store():
@@ -124,6 +139,7 @@ def create_app() -> FastAPI:
         return QueryResponse(**result)
 
     app.state._jwt_validator_factory = jwt_validator
+    app.state._store_factory = store
     return app
 
 
