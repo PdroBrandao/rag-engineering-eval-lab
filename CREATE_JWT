@@ -1,0 +1,19 @@
+python - <<'PY'
+import jwt
+from pathlib import Path
+from datetime import datetime, timedelta, timezone
+
+now = datetime.now(timezone.utc)
+
+payload = {
+    "iss": "http://localhost:8000",
+    "sub": "pedro-local",
+    "aud": "rag-lab",
+    "iat": now,
+    "exp": now + timedelta(hours=5),
+}
+
+private_key = Path(".local-auth/private.pem").read_text()
+token = jwt.encode(payload, private_key, algorithm="RS256")
+print(token)
+PY

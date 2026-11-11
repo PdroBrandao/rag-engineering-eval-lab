@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 from pathlib import Path
 from typing import Any, Callable
 
@@ -101,11 +102,18 @@ def main(argv: list[str] | None = None) -> int:
     store = SupabaseDocumentStore(create_supabase(settings))
     embedder = OpenAIEmbedder(OpenAI(api_key=settings.openai_api_key), settings.embedding_model)
 
+    eval_collections = [
+        item.strip()
+        for item in os.environ.get("EVAL_COLLECTIONS", "legacy").split(",")
+        if item.strip()
+    ]
+
     def query_fn(question: str, k: int) -> dict[str, Any]:
         return query_retrieval(
             question,
             store,
             embedder,
+            filter_collections=eval_collections,
             top_k=k,
             rrf_k=dataset["rrf_k"],
             candidate_k=max(k, 20),

@@ -5,10 +5,13 @@ Local API for ingesting PDFs and comparing vector, lexical, and hybrid retrieval
 ## Requirements
 
 - Python 3.11 and the `.venv` virtualenv
-- `.env` variables: `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`
-- [sql/001_retrieval.sql](sql/001_retrieval.sql), already applied to the configured Supabase project
+- Copy [.env.example](.env.example) to `.env` and set `OPENAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_KEY`, and `JWT_*` values
+- Apply [sql/001_retrieval.sql](sql/001_retrieval.sql) and [sql/002_auth_rbac.sql](sql/002_auth_rbac.sql) on your Supabase project (manually)
+- Optional seed: [sql/002_seed_dev_identities.example.sql](sql/002_seed_dev_identities.example.sql)
 
-`.env` stays out of Git. The Supabase key is the server secret key. It does not appear in code, logs, Postman, or this documentation.
+`.env` stays out of Git. See [SECURITY_ARCHITECTURE.md](SECURITY_ARCHITECTURE.md) for how JWT and collection authorization work.
+
+`POST /ingest` and `POST /query` require `Authorization: Bearer <JWT>`. `GET /health` does not.
 
 ## Start the API
 
@@ -34,20 +37,24 @@ Both listen only on `127.0.0.1:8000`. Interactive documentation is at `http://12
 `POST /ingest` accepts `multipart/form-data`:
 
 - `file`: PDF, up to 20 MB
+- `collection`: target collection (required), e.g. `legacy`, `finance`
 - `chunk_size`: default 500 tokens
 - `chunk_overlap`: default 50 tokens
 - `replace`: `true` returns 400. v1 does not delete chunks.
 
-Uploading the same PDF bytes again returns 409 and does not generate embeddings again.
+Requires JWT plus `documents:write` on the target collection. Duplicate detection is per collection.
 
 `POST /query`:
 
 ```json
 {
   "question": "What are the main risks of LLM-as-a-Judge?",
-  "top_k": 5
+  "top_k": 5,
+  "collections": ["legacy"]
 }
 ```
+
+`collections` is optional; when omitted, all read-authorized collections are searched. Requesting a collection you cannot read returns 403.
 
 The response includes the vector and lexical lists used for fusion, the hybrid list cut to `top_k`, latencies, and the documents found. `similarity`, `lexical_score`, and `rrf_score` are not on the same scale.
 

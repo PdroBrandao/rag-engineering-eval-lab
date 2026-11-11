@@ -21,3 +21,13 @@ class EmbeddingError(LabError):
 class DatabaseError(LabError):
     def __init__(self, message: str = "Database request failed.") -> None:
         super().__init__(503, message)
+
+
+class AuthenticationError(LabError):
+    def __init__(self, message: str = "Authentication required.") -> None:
+        super().__init__(401, message)
+
+
+class AuthorizationError(LabError):
+    def __init__(self, message: str = "Access denied.") -> None:
+        super().__init__(403, message)
