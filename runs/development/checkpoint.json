@@ -1,0 +1,7 @@
+{
+  "run_id": "development-v13-ptor",
+  "lexical_version": "portuguese_or",
+  "fingerprint": "bd4e899c7ea7339d69c052d52b7332e72ded42a54599a66d140c8b77a1d40d88",
+  "call_timeout_seconds": 60.0,
+  "max_attempts": 3
+}

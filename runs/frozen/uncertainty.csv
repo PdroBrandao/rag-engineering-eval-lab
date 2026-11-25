@@ -1,0 +1,5 @@
+config_id,metric,n,estimate,low_95,high_95,limitation
+cs512_top10_lexical,evidence_satisfied_rate,20,0.75,0.531295,0.88814,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top5_hybrid,evidence_satisfied_rate,20,0.65,0.432851,0.81881,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top10_lexical,answer_correct_rate_valid_only,20,0.9,0.698962,0.972134,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top5_hybrid,answer_correct_rate_valid_only,20,0.9,0.698962,0.972134,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."

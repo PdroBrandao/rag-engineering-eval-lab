@@ -1,5 +1,5 @@
 import time
-from typing import Any
+from typing import Any, Callable
 
 from retrieval_lab.db import DocumentStore
 from retrieval_lab.embeddings import Embedder
@@ -78,12 +78,17 @@ def query_retrieval(
     top_k: int = 5,
     rrf_k: int = 60,
     candidate_k: int | None = None,
+    filter_index_set_id: str | None = None,
+    on_stage: Callable[[str], None] | None = None,
+    lexical_version: str = "english_and",
 ) -> dict[str, Any]:
     cleaned = question.strip()
     if not cleaned:
         raise RetrievalError(422, "question must not be empty.")
     if rrf_k < 1:
         raise RetrievalError(422, "rrf_k must be a positive integer.")
+    if lexical_version not in {"english_and", "portuguese_or"}:
+        raise RetrievalError(422, "lexical_version must be english_and or portuguese_or.")
     resolved_candidate_k = resolve_candidate_k(top_k, candidate_k)
     if not filter_collections:
         return {
@@ -92,9 +97,12 @@ def query_retrieval(
             "rrf_k": rrf_k,
             "candidate_k": resolved_candidate_k,
             "filter_collections": [],
+            "filter_index_set_id": filter_index_set_id,
             "vector": [],
             "lexical": [],
+            "lexical_pt_or": [],
             "hybrid": [],
+            "lexical_version": lexical_version,
             "latency_ms": {
                 "embed_ms": 0.0,
                 "vector_ms": 0.0,
@@ -105,6 +113,8 @@ def query_retrieval(
             "documents": [],
         }
 
+    if on_stage is not None:
+        on_stage("embedding")
     embed_started = time.perf_counter()
     try:
         query_embedding = embedder.embed_texts([cleaned])[0]
@@ -114,10 +124,15 @@ def query_retrieval(
         raise EmbeddingError() from exc
     embed_ms = _elapsed_ms(embed_started)
 
+    if on_stage is not None:
+        on_stage("retrieval")
     vector_started = time.perf_counter()
     try:
         vector_rows = store.match_documents(
-            query_embedding, resolved_candidate_k, filter_collections
+            query_embedding,
+            resolved_candidate_k,
+            filter_collections,
+            filter_index_set_id=filter_index_set_id,
         )
     except DatabaseError:
         raise
@@ -127,9 +142,20 @@ def query_retrieval(
 
     lexical_started = time.perf_counter()
     try:
-        lexical_rows = store.search_fts(
-            cleaned, resolved_candidate_k, filter_collections
-        )
+        if lexical_version == "portuguese_or":
+            lexical_rows = store.search_fts_pt_or(
+                cleaned,
+                resolved_candidate_k,
+                filter_collections,
+                filter_index_set_id=filter_index_set_id,
+            )
+        else:
+            lexical_rows = store.search_fts(
+                cleaned,
+                resolved_candidate_k,
+                filter_collections,
+                filter_index_set_id=filter_index_set_id,
+            )
     except DatabaseError:
         raise
     except Exception as exc:
@@ -139,6 +165,7 @@ def query_retrieval(
     try:
         vector_hits = [_vector_hit(row) for row in vector_rows] # [{"id": 54, "similarity": 0.515, "rank": 1},{...}]
         lexical_hits = [_lexical_hit(row) for row in lexical_rows]
+        lexical_pt_or_hits = lexical_hits if lexical_version == "portuguese_or" else []
     except (KeyError, TypeError, ValueError) as exc:
         raise DatabaseError("Retrieval response was missing required fields.") from exc
 
@@ -172,15 +199,77 @@ def query_retrieval(
         "rrf_k": rrf_k,
         "candidate_k": resolved_candidate_k,
         "filter_collections": filter_collections,
+        "filter_index_set_id": filter_index_set_id,
         "vector": vector_hits,
         "lexical": lexical_hits,
+        "lexical_pt_or": lexical_pt_or_hits,
         "hybrid": hybrid_hits,
+        "lexical_version": lexical_version,
         "latency_ms": {
             "embed_ms": embed_ms,
             "vector_ms": vector_ms,
             "lexical_ms": lexical_ms,
+            "lexical_pt_or_ms": lexical_ms if lexical_version == "portuguese_or" else 0.0,
             "fusion_ms": fusion_ms,
             "hybrid_ms": round(vector_ms + lexical_ms + fusion_ms, 3),
         },
         "documents": _document_refs(vector_hits, lexical_hits),
+    }
+
+
+def query_lexical_pt_or(
+    question: str,
+    store: DocumentStore,
+    *,
+    filter_collections: list[str],
+    candidate_k: int,
+    filter_index_set_id: str | None = None,
+) -> dict[str, Any]:
+    """Portuguese OR lexical search only. Vector and hybrid stay untouched."""
+    cleaned = question.strip()
+    if not cleaned:
+        raise RetrievalError(422, "question must not be empty.")
+    if candidate_k < 1:
+        raise RetrievalError(422, "candidate_k must be a positive integer.")
+    if not filter_collections:
+        hits: list[dict[str, Any]] = []
+        elapsed = 0.0
+    else:
+        started = time.perf_counter()
+        try:
+            rows = store.search_fts_pt_or(
+                cleaned,
+                candidate_k,
+                filter_collections,
+                filter_index_set_id=filter_index_set_id,
+            )
+        except DatabaseError:
+            raise
+        except Exception as exc:
+            raise DatabaseError() from exc
+        elapsed = _elapsed_ms(started)
+        try:
+            hits = [_lexical_hit(row) for row in rows]
+        except (KeyError, TypeError, ValueError) as exc:
+            raise DatabaseError("Retrieval response was missing required fields.") from exc
+    return {
+        "question": cleaned,
+        "top_k": 10,
+        "candidate_k": candidate_k,
+        "filter_collections": filter_collections,
+        "filter_index_set_id": filter_index_set_id,
+        "vector": [],
+        "lexical": [],
+        "lexical_pt_or": hits,
+        "hybrid": [],
+        "lexical_version": "portuguese_or",
+        "latency_ms": {
+            "embed_ms": 0.0,
+            "vector_ms": 0.0,
+            "lexical_ms": 0.0,
+            "lexical_pt_or_ms": elapsed,
+            "fusion_ms": 0.0,
+            "hybrid_ms": 0.0,
+        },
+        "documents": _document_refs(hits),
     }

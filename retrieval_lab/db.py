@@ -15,7 +15,12 @@ class DocumentStore(Protocol):
 
     def resolve_lab_access(self, issuer: str, subject: str) -> dict[str, Any]: ...
 
-    def find_by_hash(self, content_sha256: str, collection: str) -> list[dict[str, Any]]: ...
+    def find_by_hash(
+        self,
+        content_sha256: str,
+        collection: str,
+        index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]: ...
 
     def insert_chunks(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]: ...
 
@@ -24,6 +29,7 @@ class DocumentStore(Protocol):
         query_embedding: list[float],
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]: ...
 
     def search_fts(
@@ -31,6 +37,15 @@ class DocumentStore(Protocol):
         query_text: str,
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]: ...
+
+    def search_fts_pt_or(
+        self,
+        query_text: str,
+        match_count: int,
+        filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]: ...
 
 
@@ -65,15 +80,21 @@ class SupabaseDocumentStore:
             "write_collections": [],
         }
 
-    def find_by_hash(self, content_sha256: str, collection: str) -> list[dict[str, Any]]:
-        response = self._execute(
+    def find_by_hash(
+        self,
+        content_sha256: str,
+        collection: str,
+        index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        query = (
             self._client.table("documents")
             .select("id,document_name,collection")
             .eq("metadata->>content_sha256", content_sha256)
             .eq("collection", collection)
-            .limit(1),
-            "find_by_hash",
         )
+        if index_set_id:
+            query = query.eq("index_set_id", index_set_id)
+        response = self._execute(query.limit(1), "find_by_hash")
         return list(response.data or [])
 
     def insert_chunks(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -88,18 +109,19 @@ class SupabaseDocumentStore:
         query_embedding: list[float],
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]:
         if not filter_collections:
             return []
+        payload = {
+            "query_embedding": query_embedding,
+            "match_count": match_count,
+            "filter_collections": filter_collections,
+        }
+        if filter_index_set_id:
+            payload["filter_index_set_id"] = filter_index_set_id
         response = self._execute(
-            self._client.rpc(
-                "match_documents",
-                {
-                    "query_embedding": query_embedding,
-                    "match_count": match_count,
-                    "filter_collections": filter_collections,
-                },
-            ),
+            self._client.rpc("match_documents", payload),
             "match_documents",
         )
         return list(response.data or [])
@@ -109,19 +131,42 @@ class SupabaseDocumentStore:
         query_text: str,
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]:
         if not filter_collections:
             return []
+        payload = {
+            "query_text": query_text,
+            "match_count": match_count,
+            "filter_collections": filter_collections,
+        }
+        if filter_index_set_id:
+            payload["filter_index_set_id"] = filter_index_set_id
         response = self._execute(
-            self._client.rpc(
-                "search_documents_fts",
-                {
-                    "query_text": query_text,
-                    "match_count": match_count,
-                    "filter_collections": filter_collections,
-                },
-            ),
+            self._client.rpc("search_documents_fts", payload),
             "search_fts",
+        )
+        return list(response.data or [])
+
+    def search_fts_pt_or(
+        self,
+        query_text: str,
+        match_count: int,
+        filter_collections: list[str],
+        filter_index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        if not filter_collections:
+            return []
+        payload = {
+            "query_text": query_text,
+            "match_count": match_count,
+            "filter_collections": filter_collections,
+        }
+        if filter_index_set_id:
+            payload["filter_index_set_id"] = filter_index_set_id
+        response = self._execute(
+            self._client.rpc("search_documents_fts_pt_or", payload),
+            "search_fts_pt_or",
         )
         return list(response.data or [])
 
@@ -132,6 +177,12 @@ class SupabaseDocumentStore:
             if operation == "insert_chunks" and exc.code == "23505":
                 raise
             logger.error("database request failed operation=%s code=%s", operation, exc.code)
+            if str(exc.code or "") == "42601":
+                raise DatabaseError(
+                    "Database request failed.",
+                    status_code=400,
+                    code="42601",
+                ) from exc
             raise DatabaseError() from exc
         except DatabaseError:
             raise

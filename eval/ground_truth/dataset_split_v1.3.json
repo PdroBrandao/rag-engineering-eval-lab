@@ -1,0 +1,101 @@
+{
+  "version": "v1.3",
+  "supersedes": "v1.2",
+  "seed": "itau-50-v1",
+  "split_unchanged": true,
+  "changed_question_ids": [
+    "Q041"
+  ],
+  "changes": [
+    {
+      "question_id": "Q041",
+      "change": "Page 20 equivalent no longer requires the leading R$ cut off by a 256-token window."
+    }
+  ],
+  "source": "eval/ground_truth/itau_50_v1.3.jsonl",
+  "source_sha256": "f253bc3d7bf54f84bc64ceb8f922206dce6b3dee70cadd0f267b7ede319baffc",
+  "locked_development_ids": [
+    "Q001",
+    "Q002",
+    "Q003",
+    "Q004",
+    "Q005",
+    "Q006",
+    "Q007",
+    "Q008",
+    "Q009",
+    "Q010"
+  ],
+  "development": {
+    "path": "eval/ground_truth/development_v1.3.jsonl",
+    "sha256": "ed57bb5795b2ed17eedf1878865130ab6d0d2aa5be2a09480b73a3eab7669302",
+    "n": 30,
+    "ids": [
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005",
+      "Q006",
+      "Q007",
+      "Q008",
+      "Q009",
+      "Q010",
+      "Q011",
+      "Q014",
+      "Q015",
+      "Q016",
+      "Q018",
+      "Q021",
+      "Q022",
+      "Q023",
+      "Q028",
+      "Q030",
+      "Q031",
+      "Q033",
+      "Q038",
+      "Q040",
+      "Q041",
+      "Q044",
+      "Q045",
+      "Q047",
+      "Q050",
+      "Q052"
+    ]
+  },
+  "frozen_benchmark": {
+    "path": "eval/ground_truth/frozen_benchmark_v1.3.jsonl",
+    "sha256": "051107236c0ed496f38707babd5d3c1cba3c676f997dda09c0c5c2969b8e6cf6",
+    "n": 20,
+    "ids": [
+      "Q012",
+      "Q013",
+      "Q017",
+      "Q019",
+      "Q020",
+      "Q026",
+      "Q027",
+      "Q029",
+      "Q032",
+      "Q034",
+      "Q035",
+      "Q036",
+      "Q037",
+      "Q039",
+      "Q042",
+      "Q043",
+      "Q046",
+      "Q048",
+      "Q049",
+      "Q051"
+    ],
+    "immutable": true,
+    "unchanged_from": "eval/ground_truth/frozen_benchmark_v1.2.jsonl",
+    "change_policy": "Do not edit frozen_benchmark_v1.3.jsonl. A change requires frozen_benchmark_v1.4."
+  },
+  "v1_2_preserved": {
+    "source_sha256": "c4004ef33297dd7016f33878351e14e5927213efa390c0cdb89d6fdf30bcdf98",
+    "development_sha256": "057c6811661c61e8d1bd398e9f364e2b814cb00d1d388ce68dacf3c1116d7f59",
+    "frozen_sha256": "051107236c0ed496f38707babd5d3c1cba3c676f997dda09c0c5c2969b8e6cf6"
+  }
+}

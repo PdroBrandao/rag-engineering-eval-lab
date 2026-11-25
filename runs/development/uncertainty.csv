@@ -1,0 +1,55 @@
+config_id,metric,n,estimate,low_95,high_95,limitation
+cs1024_top10_hybrid,evidence_satisfied_rate,30,0.833333,0.664353,0.926636,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top10_lexical,evidence_satisfied_rate,30,0.9,0.743786,0.965401,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top10_vector,evidence_satisfied_rate,30,0.666667,0.487797,0.807697,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top3_hybrid,evidence_satisfied_rate,30,0.633333,0.455132,0.781263,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top3_lexical,evidence_satisfied_rate,30,0.733333,0.555517,0.858175,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top3_vector,evidence_satisfied_rate,30,0.566667,0.39197,0.726228,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top5_hybrid,evidence_satisfied_rate,30,0.7,0.521239,0.833354,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top5_lexical,evidence_satisfied_rate,30,0.8,0.62694,0.90495,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top5_vector,evidence_satisfied_rate,30,0.6,0.423201,0.754096,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top10_hybrid,evidence_satisfied_rate,30,0.766667,0.590713,0.882078,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top10_lexical,evidence_satisfied_rate,30,0.766667,0.590713,0.882078,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top10_vector,evidence_satisfied_rate,30,0.533333,0.36142,0.697679,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top3_hybrid,evidence_satisfied_rate,30,0.533333,0.36142,0.697679,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top3_lexical,evidence_satisfied_rate,30,0.566667,0.39197,0.726228,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top3_vector,evidence_satisfied_rate,30,0.4,0.245904,0.576799,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top5_hybrid,evidence_satisfied_rate,30,0.633333,0.455132,0.781263,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top5_lexical,evidence_satisfied_rate,30,0.733333,0.555517,0.858175,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs256_top5_vector,evidence_satisfied_rate,30,0.433333,0.273772,0.60803,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top10_hybrid,evidence_satisfied_rate,30,0.766667,0.590713,0.882078,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top10_lexical,evidence_satisfied_rate,30,0.833333,0.664353,0.926636,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top10_vector,evidence_satisfied_rate,30,0.666667,0.487797,0.807697,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top3_hybrid,evidence_satisfied_rate,30,0.633333,0.455132,0.781263,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top3_lexical,evidence_satisfied_rate,30,0.7,0.521239,0.833354,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top3_vector,evidence_satisfied_rate,30,0.566667,0.39197,0.726228,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top5_hybrid,evidence_satisfied_rate,30,0.733333,0.555517,0.858175,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top5_lexical,evidence_satisfied_rate,30,0.766667,0.590713,0.882078,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs512_top5_vector,evidence_satisfied_rate,30,0.566667,0.39197,0.726228,Wilson interval. table_ambiguous matches stay unconfirmed and are not answer grades.
+cs1024_top10_hybrid,answer_correct_rate_valid_only,30,0.9,0.743786,0.965401,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top10_lexical,answer_correct_rate_valid_only,30,0.933333,0.786762,0.981523,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top10_vector,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top3_hybrid,answer_correct_rate_valid_only,30,0.766667,0.590713,0.882078,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top3_lexical,answer_correct_rate_valid_only,30,0.833333,0.664353,0.926636,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top3_vector,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top5_hybrid,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top5_lexical,answer_correct_rate_valid_only,30,0.866667,0.703183,0.946904,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs1024_top5_vector,answer_correct_rate_valid_only,30,0.766667,0.590713,0.882078,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top10_hybrid,answer_correct_rate_valid_only,30,0.9,0.743786,0.965401,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top10_lexical,answer_correct_rate_valid_only,30,0.866667,0.703183,0.946904,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top10_vector,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top3_hybrid,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top3_lexical,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top3_vector,answer_correct_rate_valid_only,30,0.6,0.423201,0.754096,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top5_hybrid,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top5_lexical,answer_correct_rate_valid_only,30,0.9,0.743786,0.965401,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs256_top5_vector,answer_correct_rate_valid_only,30,0.633333,0.455132,0.781263,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top10_hybrid,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top10_lexical,answer_correct_rate_valid_only,30,0.9,0.743786,0.965401,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top10_vector,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top3_hybrid,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top3_lexical,answer_correct_rate_valid_only,30,0.8,0.62694,0.90495,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top3_vector,answer_correct_rate_valid_only,30,0.6,0.423201,0.754096,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top5_hybrid,answer_correct_rate_valid_only,30,0.766667,0.590713,0.882078,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top5_lexical,answer_correct_rate_valid_only,30,0.866667,0.703183,0.946904,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."
+cs512_top5_vector,answer_correct_rate_valid_only,30,0.733333,0.555517,0.858175,"Excludes inconclusive judge verdicts, unsupported rubrics and failed calls."

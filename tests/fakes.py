@@ -19,6 +19,7 @@ class MemoryStore:
         self.rows: list[dict[str, Any]] = []
         self.vector_rows: list[dict[str, Any]] = []
         self.lexical_rows: list[dict[str, Any]] = []
+        self.pt_or_rows: list[dict[str, Any]] = []
         self.fail_ping = False
         self.fail_insert = False
         self.access_by_principal: dict[tuple[str, str], dict[str, Any]] = {}
@@ -55,8 +56,15 @@ class MemoryStore:
             },
         )
 
-    def find_by_hash(self, content_sha256: str, collection: str) -> list[dict[str, Any]]:
+    def find_by_hash(
+        self,
+        content_sha256: str,
+        collection: str,
+        index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]:
         for row in self.rows:
+            if index_set_id and row.get("index_set_id") != index_set_id:
+                continue
             if (
                 row.get("collection") == collection
                 and row["metadata"].get("content_sha256") == content_sha256
@@ -78,6 +86,7 @@ class MemoryStore:
             for existing in self.rows:
                 same_document = (
                     existing.get("collection") == row.get("collection")
+                    and existing.get("index_set_id") == row.get("index_set_id")
                     and existing["metadata"]["content_sha256"]
                     == row["metadata"]["content_sha256"]
                     and existing["chunk_index"] == row["chunk_index"]
@@ -95,17 +104,21 @@ class MemoryStore:
         query_embedding: list[float],
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]:
         self.match_calls.append(
             {
                 "match_count": match_count,
                 "filter_collections": list(filter_collections),
+                "filter_index_set_id": filter_index_set_id,
             }
         )
         if not filter_collections:
             return []
         allowed = set(filter_collections)
         ranked = [row for row in self.vector_rows if row.get("collection") in allowed]
+        if filter_index_set_id:
+            ranked = [row for row in ranked if row.get("index_set_id") == filter_index_set_id]
         return ranked[:match_count]
 
     def search_fts(
@@ -113,18 +126,46 @@ class MemoryStore:
         query_text: str,
         match_count: int,
         filter_collections: list[str],
+        filter_index_set_id: str | None = None,
     ) -> list[dict[str, Any]]:
         self.fts_calls.append(
             {
                 "query_text": query_text,
                 "match_count": match_count,
-                "filter_collections": list(filter_collections),
+                "filter_collections": filter_collections,
+                "filter_index_set_id": filter_index_set_id,
             }
         )
         if not filter_collections:
             return []
         allowed = set(filter_collections)
         ranked = [row for row in self.lexical_rows if row.get("collection") in allowed]
+        if filter_index_set_id:
+            ranked = [row for row in ranked if row.get("index_set_id") == filter_index_set_id]
+        return ranked[:match_count]
+
+    def search_fts_pt_or(
+        self,
+        query_text: str,
+        match_count: int,
+        filter_collections: list[str],
+        filter_index_set_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        self.fts_calls.append(
+            {
+                "rpc": "search_documents_fts_pt_or",
+                "query_text": query_text,
+                "match_count": match_count,
+                "filter_collections": filter_collections,
+                "filter_index_set_id": filter_index_set_id,
+            }
+        )
+        if not filter_collections:
+            return []
+        allowed = set(filter_collections)
+        ranked = [row for row in self.pt_or_rows if row.get("collection") in allowed]
+        if filter_index_set_id:
+            ranked = [row for row in ranked if row.get("index_set_id") == filter_index_set_id]
         return ranked[:match_count]
 
     def try_legacy_unscoped_match(self, query_embedding: list[float], match_count: int):

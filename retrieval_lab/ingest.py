@@ -24,6 +24,9 @@ def ingest_pdf(
     replace: bool = False,
     embedding_model: str = "text-embedding-3-small",
     max_upload_bytes: int = 20 * 1024 * 1024,
+    index_set_id: str | None = None,
+    document_id: str | None = None,
+    extraction_version: str = "pypdf-v1",
 ) -> dict[str, Any]:
     if replace:
         raise IngestError(
@@ -41,7 +44,7 @@ def ingest_pdf(
         raise IngestError(400, str(exc)) from exc
 
     document_hash = content_sha256(data)
-    existing = store.find_by_hash(document_hash, collection)
+    existing = store.find_by_hash(document_hash, collection, index_set_id=index_set_id)
     if existing:
         stored_name = existing[0].get("document_name") or "the previous upload"
         raise IngestError(
@@ -73,11 +76,17 @@ def ingest_pdf(
                 "token_count": chunk.token_count,
                 "chunk_size": chunk_size,
                 "chunk_overlap": chunk_overlap,
+                "document_id": document_id,
+                "index_set_id": index_set_id,
+                "extraction_version": extraction_version,
             },
             "embedding": vector,
         }
         for chunk, vector in zip(chunks, vectors)
     ]
+    if index_set_id:
+        for row in rows:
+            row["index_set_id"] = index_set_id
     try:
         inserted = store.insert_chunks(rows)
     except DatabaseError:
@@ -103,4 +112,6 @@ def ingest_pdf(
         "page_count": len(pages),
         "chunk_count": len(chunks),
         "chunk_ids": chunk_ids,
+        "index_set_id": index_set_id,
+        "document_id": document_id,
     }

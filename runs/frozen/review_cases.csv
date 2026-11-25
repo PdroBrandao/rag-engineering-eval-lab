@@ -1,0 +1,11 @@
+question_id,config_id,reasons,answer_correct
+Q017,cs512_top5_hybrid,needs_review,
+Q017,cs512_top10_lexical,needs_review,
+Q019,cs512_top5_hybrid,needs_review,
+Q019,cs512_top10_lexical,needs_review,
+Q020,cs512_top5_hybrid,needs_review,
+Q020,cs512_top10_lexical,needs_review,
+Q026,cs512_top5_hybrid,needs_review,
+Q026,cs512_top10_lexical,needs_review,
+Q037,cs512_top5_hybrid,needs_review,
+Q037,cs512_top10_lexical,needs_review,

@@ -1,0 +1,3 @@
+config_id,valid,inconclusive,not_evaluated,n_rows
+cs512_top10_lexical,20,0,0,20
+cs512_top5_hybrid,20,0,0,20

@@ -1,0 +1,25 @@
+{
+  "experiment_id": "itau-v0.3",
+  "collection": "itau_2025",
+  "collections": ["itau_2025"],
+  "document_id": "itau_annual_report_2025",
+  "baseline_config_id": "cs512_top5_hybrid",
+  "retrieval": {
+    "candidate_k": 20,
+    "rrf_k": 60,
+    "hybrid_fusion": "rrf"
+  },
+  "generate": {
+    "model": "gpt-4o-mini",
+    "judge_model": "gpt-4o-mini",
+    "temperature": 0,
+    "max_output_tokens": 512,
+    "system_prompt": "Responda apenas com o que estiver sustentado pelo contexto. Se o contexto não trouxer a resposta, diga que não sabe.",
+    "user_template": "Contexto:\n{context}\n\nPergunta:\n{question}\n\nResponda de forma breve.",
+    "pricing_usd_per_1m": {
+      "input": 0.15,
+      "output": 0.6,
+      "embedding_input": 0.02
+    }
+  }
+}

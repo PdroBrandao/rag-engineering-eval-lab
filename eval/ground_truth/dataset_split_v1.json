@@ -1,0 +1,248 @@
+{
+  "version": "v1",
+  "seed": "itau-50-v1",
+  "difficulty_proxy": "hard=table_ambiguous; medium=judge|semantic_review|multi-span|desambiguacao|multitrecho; else easy",
+  "tie_break": "Hamilton largest fractional part, then name ascending; shuffle is Python random.Random of the seed string",
+  "source": "eval/ground_truth/itau_50_v1.0.jsonl",
+  "source_sha256": "ba6953be44005d2237c477f1103acf91b4e6cd6c6a6785863e94190a78f5bcf0",
+  "locked_development_ids": [
+    "Q001",
+    "Q002",
+    "Q003",
+    "Q004",
+    "Q005",
+    "Q006",
+    "Q007",
+    "Q008",
+    "Q009",
+    "Q010"
+  ],
+  "development": {
+    "path": "eval/ground_truth/development_v1.jsonl",
+    "sha256": "4bd71eec0cf3f1f3680bc2b3532a2c137bf4a1a6917806ede031b9441fd9a795",
+    "n": 30,
+    "ids": [
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005",
+      "Q006",
+      "Q007",
+      "Q008",
+      "Q009",
+      "Q010",
+      "Q011",
+      "Q014",
+      "Q015",
+      "Q016",
+      "Q018",
+      "Q021",
+      "Q022",
+      "Q023",
+      "Q028",
+      "Q030",
+      "Q031",
+      "Q033",
+      "Q038",
+      "Q040",
+      "Q041",
+      "Q044",
+      "Q045",
+      "Q047",
+      "Q050",
+      "Q052"
+    ]
+  },
+  "frozen_benchmark": {
+    "path": "eval/ground_truth/frozen_benchmark_v1.jsonl",
+    "sha256": "a987e0e7e8394162ddf57b699f7de817b55e7176087a0329090b983b7a3c8e00",
+    "n": 20,
+    "ids": [
+      "Q012",
+      "Q013",
+      "Q017",
+      "Q019",
+      "Q020",
+      "Q026",
+      "Q027",
+      "Q029",
+      "Q032",
+      "Q034",
+      "Q035",
+      "Q036",
+      "Q037",
+      "Q039",
+      "Q042",
+      "Q043",
+      "Q046",
+      "Q048",
+      "Q049",
+      "Q051"
+    ],
+    "immutable": true,
+    "change_policy": "Do not edit frozen_benchmark_v1.jsonl. A change requires frozen_benchmark_v2."
+  },
+  "frozen_by_category": {
+    "desambiguacao": 2,
+    "factual": 11,
+    "multitrecho": 1,
+    "numerica": 3,
+    "semantica": 3
+  },
+  "allocation": [
+    {
+      "category": "desambiguacao",
+      "difficulty": "hard",
+      "frozen_ids": [
+        "Q020"
+      ],
+      "development_ids": []
+    },
+    {
+      "category": "desambiguacao",
+      "difficulty": "medium",
+      "frozen_ids": [
+        "Q046"
+      ],
+      "development_ids": [
+        "Q052"
+      ]
+    },
+    {
+      "category": "factual",
+      "difficulty": "easy",
+      "frozen_ids": [
+        "Q032",
+        "Q012",
+        "Q029"
+      ],
+      "development_ids": [
+        "Q040",
+        "Q023",
+        "Q031"
+      ]
+    },
+    {
+      "category": "factual",
+      "difficulty": "hard",
+      "frozen_ids": [
+        "Q037",
+        "Q026"
+      ],
+      "development_ids": [
+        "Q033",
+        "Q038"
+      ]
+    },
+    {
+      "category": "factual",
+      "difficulty": "medium",
+      "frozen_ids": [
+        "Q036",
+        "Q034",
+        "Q035",
+        "Q039",
+        "Q027",
+        "Q042"
+      ],
+      "development_ids": [
+        "Q028",
+        "Q047",
+        "Q021",
+        "Q030",
+        "Q018",
+        "Q014",
+        "Q022"
+      ]
+    },
+    {
+      "category": "multitrecho",
+      "difficulty": "hard",
+      "frozen_ids": [
+        "Q017"
+      ],
+      "development_ids": []
+    },
+    {
+      "category": "multitrecho",
+      "difficulty": "medium",
+      "frozen_ids": [],
+      "development_ids": [
+        "Q045"
+      ]
+    },
+    {
+      "category": "numerica",
+      "difficulty": "easy",
+      "frozen_ids": [
+        "Q013"
+      ],
+      "development_ids": []
+    },
+    {
+      "category": "numerica",
+      "difficulty": "medium",
+      "frozen_ids": [
+        "Q043",
+        "Q048"
+      ],
+      "development_ids": [
+        "Q041",
+        "Q050",
+        "Q044"
+      ]
+    },
+    {
+      "category": "semantica",
+      "difficulty": "hard",
+      "frozen_ids": [
+        "Q019"
+      ],
+      "development_ids": []
+    },
+    {
+      "category": "semantica",
+      "difficulty": "medium",
+      "frozen_ids": [
+        "Q049",
+        "Q051"
+      ],
+      "development_ids": [
+        "Q015",
+        "Q011",
+        "Q016"
+      ]
+    }
+  ],
+  "counts": {
+    "development": {
+      "category": {
+        "factual": 15,
+        "numerica": 7,
+        "semantica": 6,
+        "multitrecho": 1,
+        "desambiguacao": 1
+      },
+      "difficulty": {
+        "easy": 8,
+        "medium": 19,
+        "hard": 3
+      }
+    },
+    "frozen_benchmark": {
+      "category": {
+        "factual": 11,
+        "numerica": 3,
+        "multitrecho": 1,
+        "semantica": 3,
+        "desambiguacao": 2
+      },
+      "difficulty": {
+        "easy": 4,
+        "hard": 5,
+        "medium": 11
+      }
+    }
+  }
+}

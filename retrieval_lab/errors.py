@@ -19,8 +19,15 @@ class EmbeddingError(LabError):
 
 
 class DatabaseError(LabError):
-    def __init__(self, message: str = "Database request failed.") -> None:
-        super().__init__(503, message)
+    def __init__(
+        self,
+        message: str = "Database request failed.",
+        *,
+        status_code: int = 503,
+        code: str | None = None,
+    ) -> None:
+        super().__init__(status_code, message)
+        self.code = code
 
 
 class AuthenticationError(LabError):

@@ -1,0 +1,110 @@
+{
+  "version": "v1.1",
+  "supersedes": "v1",
+  "seed": "itau-50-v1",
+  "split_unchanged": true,
+  "changed_question_ids": [
+    "Q030",
+    "Q037",
+    "Q040"
+  ],
+  "changes": [
+    {
+      "question_id": "Q030",
+      "change": "S2 uses the contiguous extracted sentence."
+    },
+    {
+      "question_id": "Q037",
+      "change": "required_phrases require both 50% claims."
+    },
+    {
+      "question_id": "Q040",
+      "change": "equivalent evidence accepted on pages 86, 89, 90, 93 and 95."
+    }
+  ],
+  "source": "eval/ground_truth/itau_50_v1.1.jsonl",
+  "source_sha256": "ab948b2fac8f35b208adba7888612415df7e737a83f8e0f8d04a283986797a40",
+  "locked_development_ids": [
+    "Q001",
+    "Q002",
+    "Q003",
+    "Q004",
+    "Q005",
+    "Q006",
+    "Q007",
+    "Q008",
+    "Q009",
+    "Q010"
+  ],
+  "development": {
+    "path": "eval/ground_truth/development_v1.1.jsonl",
+    "sha256": "de020d71176e6cfc1b7fe164c15b3a7466101dc6b5dbcfb6be130694baaf5c3e",
+    "n": 30,
+    "ids": [
+      "Q001",
+      "Q002",
+      "Q003",
+      "Q004",
+      "Q005",
+      "Q006",
+      "Q007",
+      "Q008",
+      "Q009",
+      "Q010",
+      "Q011",
+      "Q014",
+      "Q015",
+      "Q016",
+      "Q018",
+      "Q021",
+      "Q022",
+      "Q023",
+      "Q028",
+      "Q030",
+      "Q031",
+      "Q033",
+      "Q038",
+      "Q040",
+      "Q041",
+      "Q044",
+      "Q045",
+      "Q047",
+      "Q050",
+      "Q052"
+    ]
+  },
+  "frozen_benchmark": {
+    "path": "eval/ground_truth/frozen_benchmark_v1.1.jsonl",
+    "sha256": "051107236c0ed496f38707babd5d3c1cba3c676f997dda09c0c5c2969b8e6cf6",
+    "n": 20,
+    "ids": [
+      "Q012",
+      "Q013",
+      "Q017",
+      "Q019",
+      "Q020",
+      "Q026",
+      "Q027",
+      "Q029",
+      "Q032",
+      "Q034",
+      "Q035",
+      "Q036",
+      "Q037",
+      "Q039",
+      "Q042",
+      "Q043",
+      "Q046",
+      "Q048",
+      "Q049",
+      "Q051"
+    ],
+    "immutable": true,
+    "change_policy": "Do not edit frozen_benchmark_v1.1.jsonl. A change requires frozen_benchmark_v1.2."
+  },
+  "v1_preserved": {
+    "source_sha256": "ba6953be44005d2237c477f1103acf91b4e6cd6c6a6785863e94190a78f5bcf0",
+    "development_sha256": "4bd71eec0cf3f1f3680bc2b3532a2c137bf4a1a6917806ede031b9441fd9a795",
+    "frozen_sha256": "a987e0e7e8394162ddf57b699f7de817b55e7176087a0329090b983b7a3c8e00"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "run_id": "frozen-v13-ptor",
+  "lexical_version": "portuguese_or",
+  "fingerprint": "f0b251aa0fc943988e23def0d16f767eb360fefa7ff1b5896c15b1271e20797b",
+  "call_timeout_seconds": 60.0,
+  "max_attempts": 3
+}

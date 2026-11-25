@@ -1,6 +1,31 @@
+# Virtual environments
 .venv/
+venv/
+
+# Secrets and local credentials
 .env
+.env.*
+!.env.example
+.local-auth/
+*.pem
+
+# Python caches
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local corpus and generated archives
 data/
-.pytest_cache/.local-auth/
+*.zip
+
+# OS
+.DS_Store
+
+# Local-only material. Kept on disk, excluded from the public repository.
+runs/archive/
+docs/ORGANIZATION.md
+EXPERIMENTS.md
+ITAU_EVIDENCE_LOG*.md
+CREATE_JWT
